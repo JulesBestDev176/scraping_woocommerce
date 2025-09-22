@@ -827,13 +827,12 @@ def scrape_background(job_id, url, max_products=None):
 if __name__ == '__main__':
     import os
     
-    # Détection de l'environnement
-    is_production = os.environ.get('RENDER') or os.environ.get('RAILWAY_ENVIRONMENT')
+    # Configuration pour production (Render détecte automatiquement via PORT)
+    port = int(os.environ.get('PORT', 5000))
     
-    if is_production:
-        # Configuration production
-        port = int(os.environ.get('PORT', 5000))
+    if os.environ.get('PORT'):
+        # Production - Render/Railway
         app.run(host='0.0.0.0', port=port, debug=False)
     else:
-        # Configuration développement
+        # Développement local
         app.run(host='127.0.0.1', port=5000, debug=True)
