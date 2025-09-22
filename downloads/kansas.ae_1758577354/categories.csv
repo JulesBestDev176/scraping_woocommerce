@@ -1,0 +1,31 @@
+﻿name,slug,parent,url
+IP Camera,ip-camera,cctv-camera,/product-category/cctv-camera/ip-camera/
+AHD Camera,ahd-camera,cctv-camera,/product-category/cctv-camera/ahd-camera/
+Solar Camera,solar-camera,cctv-camera,/product-category/cctv-camera/solar-camera/
+WIFI Camera,wifi-camera,cctv-camera,/product-category/cctv-camera/wifi-camera/
+Networking devices,networking-devices,cctv-camera,/product-category/cctv-camera/networking-devices/
+Hard Disk,hard-disk,cctv-camera,/product-category/cctv-camera/hard-disk/
+Biometric,biometric,access-control-time-attendance,/product-category/access-control-time-attendance/biometric/
+Smart Door Lock,smart-door-lock,access-control-time-attendance,/product-category/access-control-time-attendance/smart-door-lock/
+Swing Gates,swing-gates,access-control-time-attendance,/product-category/access-control-time-attendance/swing-gates/
+Magnetic Locks,magnetic-locks,access-control-time-attendance,/product-category/access-control-time-attendance/magnetic-locks/
+Entrance Access Control,entrance-access-control,access-control-time-attendance,/product-category/access-control-time-attendance/entrance-access-control/
+Video Door Phones,video-door-phones,video-door-phones-intercom,/product-category/video-door-phones-intercom/video-door-phones/
+Hand Held Dector,hand-held-dector,scanners-detectors,/product-category/scanners-detectors/hand-held-dector/
+Walk Through Metal Detector,walk-through-metal-detector,scanners-detectors,/product-category/scanners-detectors/walk-through-metal-detector/
+X-ray Baggage Scanner,x-ray-baggage-scanner,scanners-detectors,/product-category/scanners-detectors/x-ray-baggage-scanner/
+Home Controller,home-controller,smart-home-automation,/product-category/smart-home-automation/home-controller/
+Sensors,sensors,smart-home-automation,/product-category/smart-home-automation/sensors/
+Analog Walky Takies,analog-walky-takies,communication-devices,/product-category/communication-devices/analog-walky-takies/
+Digital Mobile Radio,dmr-digital-mobile-radio,communication-devices,/product-category/communication-devices/dmr-digital-mobile-radio/
+Repeater,repeater,communication-devices,/product-category/communication-devices/repeater/
+Networking Solutions,networking-solutions,communication-devices,/product-category/communication-devices/networking-solutions/
+GPS & Tracking Devices,gps-tracking-devices,satellite-and-tracking-solutions,/product-category/satellite-and-tracking-solutions/gps-tracking-devices/
+GPS Watches,gps-watches,satellite-and-tracking-solutions,/product-category/satellite-and-tracking-solutions/gps-watches/
+Satellite Phones,satellite-phones,satellite-and-tracking-solutions,/product-category/satellite-and-tracking-solutions/satellite-phones/
+Video Door Phones & Intercom,video-door-phones-intercom,,https://www.kansas.ae/product-category/video-door-phones-intercom/
+Access Control & Time Attendance,access-control-time-attendance,,https://www.kansas.ae/product-category/access-control-time-attendance/
+Satellite and Tracking Solutions,satellite-and-tracking-solutions,,/product-category/satellite-and-tracking-solutions/
+CCTV Camera,cctv-camera,,/product-category/cctv-camera/
+Home Automation,smart-home-automation,,/product-category/smart-home-automation/
+Communication Devices,communication-devices,,/product-category/communication-devices/

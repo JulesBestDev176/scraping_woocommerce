@@ -11,6 +11,8 @@ import threading
 import json
 import zipfile
 import shutil
+import base64
+from pathlib import Path
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'
@@ -538,6 +540,32 @@ class WooCommerceScraper:
 def index():
     return render_template('index.html')
 
+@app.route('/convert_images', methods=['POST'])
+def convert_images():
+    data = request.get_json()
+    folder_path = data.get('folder_path', '').strip()
+    
+    if not folder_path or not os.path.exists(folder_path):
+        return jsonify({'error': 'Dossier non trouvé'}), 400
+    
+    csv_path = os.path.join(folder_path, 'products.csv')
+    if not os.path.exists(csv_path):
+        return jsonify({'error': 'Fichier products.csv non trouvé'}), 400
+    
+    try:
+        images_dir = os.path.join(folder_path, 'images')
+        if os.path.exists(images_dir):
+            base64_csv_path = convert_csv_to_base64(csv_path, images_dir)
+            return jsonify({
+                'success': True,
+                'message': 'Conversion terminée',
+                'file_path': str(base64_csv_path)
+            })
+        else:
+            return jsonify({'error': 'Dossier images non trouvé'}), 400
+    except Exception as e:
+        return jsonify({'error': f'Erreur: {str(e)}'}), 500
+
 @app.route('/start_scrape', methods=['POST'])
 def start_scrape():
     data = request.get_json()
@@ -610,6 +638,57 @@ def download_file(job_id):
     save_jobs()
     
     return send_file(zip_filepath, as_attachment=True, download_name=zip_filename)
+
+def image_to_base64(image_path):
+    """Convertit une image en base64"""
+    try:
+        with open(image_path, 'rb') as image_file:
+            encoded = base64.b64encode(image_file.read()).decode('utf-8')
+            ext = Path(image_path).suffix.lower()
+            mime_types = {
+                '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg', 
+                '.png': 'image/png',
+                '.webp': 'image/webp',
+                '.gif': 'image/gif'
+            }
+            mime_type = mime_types.get(ext, 'image/jpeg')
+            return f"data:{mime_type};base64,{encoded}"
+    except:
+        return ""
+
+def convert_csv_to_base64(csv_path, images_dir):
+    """Convertit les images du CSV en base64"""
+    rows = []
+    with open(csv_path, 'r', encoding='utf-8-sig') as f:
+        reader = csv.DictReader(f)
+        fieldnames = reader.fieldnames
+        
+        for row in reader:
+            if row['main_image']:
+                img_path = Path(images_dir) / row['main_image']
+                if img_path.exists():
+                    row['main_image'] = image_to_base64(img_path)
+            
+            if row['gallery_images']:
+                gallery_files = row['gallery_images'].split(';')
+                gallery_base64 = []
+                for img_file in gallery_files:
+                    if img_file.strip():
+                        img_path = Path(images_dir) / img_file.strip()
+                        if img_path.exists():
+                            gallery_base64.append(image_to_base64(img_path))
+                row['gallery_images'] = ';'.join(gallery_base64)
+            
+            rows.append(row)
+    
+    output_path = Path(csv_path).parent / 'products_base64.csv'
+    with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+    
+    return output_path
 
 def scrape_background(job_id, url, max_products=None):
     try:
@@ -723,6 +802,16 @@ def scrape_background(job_id, url, max_products=None):
                         'url': ''
                     })
         
+        # Créer le CSV avec images en base64
+        jobs[job_id]['status'] = 'Conversion des images...'
+        jobs[job_id]['progress'] = 98
+        save_jobs()
+        
+        images_dir = os.path.join(scrape_folder, 'images')
+        if os.path.exists(images_dir):
+            base64_csv_path = convert_csv_to_base64(products_filepath, images_dir)
+            jobs[job_id]['base64_csv_path'] = str(base64_csv_path)
+        
         jobs[job_id]['filepath'] = scrape_folder
         jobs[job_id]['products_filepath'] = products_filepath
         jobs[job_id]['categories_filepath'] = categories_filepath if site_categories else None
@@ -736,4 +825,15 @@ def scrape_background(job_id, url, max_products=None):
         save_jobs()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    
+    # Détection de l'environnement
+    is_production = os.environ.get('RENDER') or os.environ.get('RAILWAY_ENVIRONMENT')
+    
+    if is_production:
+        # Configuration production
+        port = int(os.environ.get('PORT', 5000))
+        app.run(host='0.0.0.0', port=port, debug=False)
+    else:
+        # Configuration développement
+        app.run(host='127.0.0.1', port=5000, debug=True)

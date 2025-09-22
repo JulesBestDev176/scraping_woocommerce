@@ -1,8 +1,0 @@
-﻿title,slug,sku,price,regular_price,sale_price,sale_start_date,sale_end_date,stock_status,manage_stock,stock_quantity,allow_backorders,sold_individually,weight,length,width,height,tax_status,tax_class,status,catalog_visibility,featured_product,description,short_description,purchase_note,virtual_product,downloadable_product,downloadable_files,download_limit,download_expiry,categories,tags,attributes,default_attributes,upsell_products,cross_sell_products,parent_product_id,main_image,gallery_images,variations,brands,color,size,material
-Ensemble Aïcha,ensemble-acha,,180.00,180.00,,,,instock,no,,no,no,,,,,taxable,,publish,visible,no,"<div aria-labelledby='tab-title-description' class='woocommerce-Tabs-panel woocommerce-Tabs-panel--description panel entry-content wc-tab' id='tab-description' role='tabpanel'>
-<h2>Description</h2>
-<p>Un ensemble fort, engagé et résolument moderne. Composé d’une chemise ample et d’un pantalon fluide, cet ensemble teint à la main en bordeaux profond mêle l’élégance des coupes à la puissance du motif circulaire tie-dye.</p>
-<p><strong>Matériau : </strong>100% Coton, teint à la main<br>
-<strong>Confection :</strong> Confectionné en France<br/>
-<strong>Entretien :</strong> Lavage à  sec ou un lavage  en machine 30°</br></p>
-</div>",,,no,no,,,,"Collection Soleil, Femme","Collection Soleil, Femme",,,,,,ensemble-acha_0_main.png,ensemble-acha_0_gallery_1.png;ensemble-acha_0_gallery_2.png;ensemble-acha_0_gallery_3.png;ensemble-acha_0_gallery_4.png,,,,,
