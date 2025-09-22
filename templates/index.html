@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Scraper E-commerce</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            margin: 0;
+            padding: 50px;
+            color: #fff;
+        }
+        
+        .container {
+            background: #2d2d2d;
+            padding: 30px;
+            max-width: 400px;
+            margin: 0 auto;
+            border: 1px solid #444;
+        }
+        
+        h1 {
+            margin: 0 0 30px 0;
+            color: #fff;
+            text-align: center;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        input[type="url"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .limit-section {
+            display: none;
+            margin-bottom: 20px;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #444;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: #666;
+        }
+        
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #555;
+        }
+        
+        .alert-success {
+            background: #2d4a2d;
+            color: #90ee90;
+        }
+        
+        .alert-error {
+            background: #4a2d2d;
+            color: #ff6b6b;
+        }
+        
+        .alert-info {
+            background: #2d3a4a;
+            color: #87ceeb;
+        }
+        
+        .progress-container {
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #1a1a1a;
+            border: 1px solid #555;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #444;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .download-btn {
+            display: none;
+            width: 100%;
+            padding: 12px;
+            background: #2d4a2d;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .download-btn:hover {
+            background: #3d5a3d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Scraper E-commerce</h1>
+        
+        <form method="POST" action="/scrape" id="scrapeForm">
+            <label for="url">URL :</label>
+            <input type="url" id="url" name="url" required>
+            
+            <label>
+                <input type="checkbox" id="limitProducts" onchange="toggleLimit()">
+                Limiter le nombre de produits
+            </label>
+            
+            <div class="limit-section" id="limitSection">
+                <label for="maxProducts">Nombre max de produits :</label>
+                <input type="number" id="maxProducts" name="maxProducts" min="1" placeholder="Ex: 100">
+            </div>
+            
+            <button type="submit" class="btn" id="startBtn">Scraper</button>
+        </form>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">0%</div>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    
+    <script>
+        let jobId = null;
+        
+        document.getElementById('scrapeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            startScraping();
+        });
+        
+        function toggleLimit() {
+            const checkbox = document.getElementById('limitProducts');
+            const section = document.getElementById('limitSection');
+            section.style.display = checkbox.checked ? 'block' : 'none';
+        }
+        
+        async function startScraping() {
+            const url = document.getElementById('url').value;
+            const limitChecked = document.getElementById('limitProducts').checked;
+            const maxProducts = limitChecked ? document.getElementById('maxProducts').value : '';
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('startBtn').textContent = 'Scraping...';
+            document.getElementById('progressContainer').style.display = 'block';
+            
+            // Démarrer le scraping
+            const response = await fetch('/start_scrape', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({url: url, maxProducts: maxProducts})
+            });
+            
+            const data = await response.json();
+            jobId = data.job_id;
+            
+            // Polling pour le progrès
+            checkProgress();
+        }
+        
+        async function checkProgress() {
+            const response = await fetch(`/progress/${jobId}`);
+            const data = await response.json();
+            
+            document.getElementById('progressFill').style.width = data.progress + '%';
+            document.getElementById('progressText').textContent = data.progress + '% - ' + data.status;
+            
+            if (data.progress < 100) {
+                setTimeout(checkProgress, 1000);
+            } else {
+                // Afficher le bouton de téléchargement
+                document.getElementById('progressText').innerHTML = 'Scraping terminé!<br><div style="text-align:center; margin-top:15px;"><a href="/download/' + jobId + '" style="display:inline-block; padding:10px 20px; background:#444; color:white; text-decoration:none; font-size:14px; border-radius:5px;">Télécharger</a></div>';
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('startBtn').textContent = 'Scraper';
+            }
+        }
+    </script>
+</body>
+</html>
